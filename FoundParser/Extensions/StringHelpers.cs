@@ -12,9 +12,9 @@ public static class StringHelpers
     public static bool IsStartsWithNum(string str, out int number)
     {
         var trimmedStr = str.Trim('(', ' ');
-        
+
         int index = trimmedStr.IndexOf(':');
-        
+
         if (index != -1)
         {
             string substringNum = trimmedStr.Substring(0, index);
@@ -31,42 +31,68 @@ public static class StringHelpers
         return false;
     }
 
-    public static string GetClearedString(string str)
+    public static string DelSubstr(string str, string start, string end)
     {
-        string cutString = str;
-        
-        if (str.Contains('('))
+        if (str.Contains(start) && str.Contains(end))
         {
-            int endIndex = str.IndexOf('(');
-            cutString = str.Substring(0, endIndex).Replace('<', ' ').Replace('>', ' ').Trim();
+            int startIndex = str.IndexOf(start);
+            int endIndex = str.IndexOf(end);
+            int length = endIndex - startIndex + 1;
+            str = str.Remove(startIndex, length).Trim();
         }
-        return cutString;
+
+        return str;
     }
-    
+
 
     public static string GetClassFromString(string str)
     {
         string subString = "new";
-        
+
         if (!str.Contains(subString))
         {
             return str;
         }
-        
-        int startIndex = str.IndexOf(subString);
+
+        if (str.Contains("_logger"))
+        {
+            return "parse error in string: " + str.Trim();
+        }
+
+
+        int subStringIndex = str.IndexOf(subString);
+        string cutStr;
+
+        if (str.Contains("new ()"))
+        {
+            cutStr = str.Substring(0, subStringIndex - 2);
+            return cutStr.Trim();
+        }
+        else
+        {
+            cutStr = str.Substring(subStringIndex + subString.Length);
+        }
+
         var result = "";
 
-        //тут я конечно ловко придумал, но если добавить лишний пробел после new то  все схлопнется, переписать...
-
-        for (int i = startIndex+subString.Length+1; i < str.Length; i++)
+        for (int i = 0; i < cutStr.Length; i++)
         {
-            if (str[i] == ' ')
+            if (cutStr[0] != ' ')
             {
                 break;
             }
-            result += str[i];
+
+            if (i > 0)
+            {
+                if (cutStr[i] == ' ')
+                {
+                    break;
+                }
+            }
+
+            result += cutStr[i];
         }
-      
+
         return result;
     }
 }
