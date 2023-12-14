@@ -42,6 +42,7 @@ public static class StringHelpers
         }
         return cutString;
     }
+    
 
     public static string GetClassFromString(string str)
     {
