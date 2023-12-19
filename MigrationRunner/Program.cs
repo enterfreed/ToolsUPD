@@ -6,7 +6,9 @@ public static class Program
     private const string folderPath = @"C:\Projects\secretStaff\src\GpnDs.PGA\";
     private const string initMigration = @"C:\Projects\secretStaff\src\GpnDs.PGA\GpnDs.PGA.Postgres.Migrations";
     private const string searchedStr = "Migrations";
+    private const string searchedStrTest = "TestDatas";
     private const string searchedExtension = ".sql";
+    private const bool IsAddTestData = true;
     
     private static Dictionary<string, string> rolePwd = new ()
     {
@@ -40,6 +42,11 @@ public static class Program
             var filesList = GetFilesInDirectory(directory);
             string loginPassword = GetLoginPasswordString(directory);
             DataBaseConnection.ExecuteQuery(filesList, loginPassword, false);
+            if (IsAddTestData)
+            {
+                var filesTestList = GetFilesInDirectory(Path.Combine(directory, searchedStrTest));
+                DataBaseConnection.ExecuteQuery(filesTestList, loginPassword, false);
+            }
         }
     }
 
