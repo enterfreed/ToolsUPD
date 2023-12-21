@@ -4,7 +4,10 @@ public class FilePublisher
 {
     public List<string> PathElems = new();
     public int LineAddress;
+    public string Project;
     public string LinkedClass;
+    public string Variable;
+    
 
     /// <summary>
     /// Метод принимает строку с адресом корневой директории и отдает абсолютный путь к файлу в виде строки

@@ -4,6 +4,8 @@ namespace FoundParser;
 
 public class FileParser
 {
+    private static readonly string[] stopWords = { "public", "internal", "private", "logger"};
+  
     /// <summary>
     /// Метод принимает путь к файлу и отдает содержимое в виде массива строк
     /// </summary>
@@ -12,16 +14,16 @@ public class FileParser
     public static string[] GetFileContent(string fileName)
     {
         string[] strArray;
-
+        
         if (File.Exists(fileName))
         {
             strArray = File.ReadAllLines(fileName);
         }
         else
         {
-            strArray = Array.Empty<string>();
+            string[] errorMessage = { "Массив не найден"};
+            strArray = errorMessage;
         }
-
         return strArray;
     }
 
@@ -33,18 +35,13 @@ public class FileParser
     /// <param name="SpacesPerLevel"> Количество пустых символов на уровень</param>
     /// <param name="FirstLevelTabCount"> Количество уровней для начального уровня работы скрипта</param>
     /// <returns></returns>
-    public static List<FilePublisher> ParseExportFile(string filePath, int SpacesPerLevel, int FirstLevelTabCount)
+    public static List<FilePublisher> ParseExportFile(string filePath, int SpacesPerLevel, int FirstLevelTabCount, Func<string, (bool isNum, int lineNum)> lineChecker)
     {
         var result = new List<FilePublisher>();
-
-        var strArray = GetFileContent(filePath);
-
-        string searchedSubStr = "Publish(";
-        string searchedExtension = "GpnDs";
-
         var dirList = new List<(string path, int level)>();
         string prepearedStr;
-
+        
+        var strArray = GetFileContent(filePath);
         for (int i = 0; i < strArray.Length; i++)
         {
             if (!strArray[i].Take(SpacesPerLevel * FirstLevelTabCount).All(x => x == ' '))
@@ -53,16 +50,17 @@ public class FileParser
             }
 
             int currentLevel = (strArray[i].Length - strArray[i].TrimStart().Length) / SpacesPerLevel;
-            if (StringHelpers.IsStartsWithNum(strArray[i], out var lineNum))
+            var checker = lineChecker(strArray[i]);
+            if (checker.isNum)
             {
                 result.Add(new FilePublisher()
                 {
-                    LineAddress = lineNum,
+                    LineAddress = checker.lineNum,
                     PathElems = dirList.Select(x => x.path).ToList(),
                 });
             }
 
-            else if (dirList.Any() && dirList.Last().level >= currentLevel)
+            else if (dirList.Where(x => true).Any() && dirList.Last().level >= currentLevel)
             {
                 if (currentLevel == 2)
                 {
@@ -70,24 +68,24 @@ public class FileParser
                 }
                 else
                 {
-                    for (int j = 0; j <= dirList.Last().level - currentLevel + 1; j++)
+                    var linesToRemove = dirList.Last().level - currentLevel;
+                    for (int j = 0; j < linesToRemove + 1; j++)
                     {
                         dirList.RemoveAt(dirList.Count - 1);
                     }
                 }
-
+                
                 prepearedStr = strArray[i].Replace('<', ' ').Replace('>', ' ');
-                prepearedStr = StringHelpers.DelSubstr(prepearedStr, "(", ")");
+                prepearedStr = StringHelpers.DelSubstr(prepearedStr, '(', ')');
                 dirList.Add((prepearedStr, currentLevel));
             }
             else
             {
                 prepearedStr = strArray[i].Replace('<', ' ').Replace('>', ' ');
-                prepearedStr = StringHelpers.DelSubstr(prepearedStr, "(", ")");
+                prepearedStr = StringHelpers.DelSubstr(prepearedStr, '(', ')');
                 dirList.Add((prepearedStr, currentLevel));
             }
         }
-
         return result;
     }
 
@@ -97,27 +95,86 @@ public class FileParser
     /// <param name="result"></param>
     /// <param name="rootPath"> Путь к папке с файлами</param>
     /// <returns></returns>
-    public static List<FilePublisher> AddTypeByFilePath(List<FilePublisher> result, string rootPath)
+    public static List<FilePublisher> AddPublisherTypeByFilePath(List<FilePublisher> result, string rootPath)
     {
+        int counter = 0;
+        
         for (int i = 0; i < result.Count; i++)
         {
+            // массив строк кода для каждого файла
             var strArray2 = GetFileContent(result[i].GetFullPath(rootPath));
-
+            
             for (int j = result[i].LineAddress; j < strArray2.Length; j--)
             {
-                if (strArray2[j].Contains("public") || strArray2[j].Contains("private"))
-                {
-                    break;
-                }
+                //Здесь записывается наша переменная, которая передается в метод
 
-                if (strArray2[j].Contains("new"))
+                var searchedVariable = StringHelpers.GetSubstr(strArray2[j], '(', ')');
+            
+                if (strArray2[j].Contains("new") && strArray2[j].Contains(searchedVariable))
                 {
-                    result[i].LinkedClass = strArray2[j];
+                    //Publish(new Type intent)
+                    //Type intent = new
+                    //var intent = new Type( - done
+                    //Type intent = invoc()
+                    //var intent = invoc() // manual?
+                    //case  private-public void Method(Type intent) check importance
+                    result[i].LinkedClass = StringHelpers.GetClassFromString(strArray2[j]);
+                    //Console.WriteLine( result[i].LinkedClass);
+                    counter++;
+                    break;
+                    
+                }else if(stopWords.Any(x => strArray2[j].Contains(x)) && strArray2[j].Contains(searchedVariable)) 
+                {
+                    result[i].LinkedClass = StringHelpers.GetClassFromString(strArray2[j], searchedVariable);
+                    //Console.WriteLine(result[i].LinkedClass);
+                    counter++; 
                     break;
                 }
             }
         }
 
+        var parsePercent = Math.Round((double)(counter*100/result.Count));
+        Console.WriteLine($"Найдено типов: {counter} - {parsePercent} %");
+        
         return result;
+    }
+    
+    public static List<FilePublisher> AddProjectByFilePath(List<FilePublisher> result)
+    {
+        for (int i = 0; i < result.Count; i++)
+        {
+            string line =result[i].PathElems.First();
+            line = line.Substring(line.LastIndexOf(@"PGA.") + 4);
+            result[i].Project = line;
+        }
+        return result;
+    }
+
+    public static List<FilePublisher> AddSubsciberTypeByFilePath(List<FilePublisher> result, string rootPath)
+    {
+        int counter = 0;
+     
+        for (int i = 0; i < result.Count; i++)
+        {
+            var strArray2 = GetFileContent(result[i].GetFullPath(rootPath));
+            var searchedVariable = result[i].PathElems.Last().Substring(0, result[i].PathElems.Last().Length -3);
+     
+            for (int j = 0 ; j < strArray2.Length; j++)
+            {
+                 if (strArray2[j].Contains(searchedVariable))
+                 {
+                     result[i].LinkedClass = StringHelpers.GetSubstr(strArray2[j], '<','>');
+                     Console.WriteLine( result[i].LinkedClass);
+                     counter++;
+                     break;
+                 }
+            }
+        }
+
+       var parsePercent = Math.Round((double)(counter*100/result.Count));
+       Console.WriteLine($"Найдено типов: {counter} - {parsePercent} %");
+        
+        return result;
+        
     }
 }
