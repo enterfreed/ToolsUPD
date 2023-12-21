@@ -119,14 +119,12 @@ public class FileParser
                     //var intent = invoc() // manual?
                     //case  private-public void Method(Type intent) check importance
                     result[i].LinkedClass = StringHelpers.GetClassFromString(strArray2[j]);
-                    //Console.WriteLine( result[i].LinkedClass);
                     counter++;
                     break;
                     
                 }else if(stopWords.Any(x => strArray2[j].Contains(x)) && strArray2[j].Contains(searchedVariable)) 
                 {
                     result[i].LinkedClass = StringHelpers.GetClassFromString(strArray2[j], searchedVariable);
-                    //Console.WriteLine(result[i].LinkedClass);
                     counter++; 
                     break;
                 }
@@ -164,7 +162,6 @@ public class FileParser
                  if (strArray2[j].Contains(searchedVariable))
                  {
                      result[i].LinkedClass = StringHelpers.GetSubstr(strArray2[j], '<','>');
-                     Console.WriteLine( result[i].LinkedClass);
                      counter++;
                      break;
                  }
@@ -175,6 +172,5 @@ public class FileParser
        Console.WriteLine($"Найдено типов: {counter} - {parsePercent} %");
         
         return result;
-        
     }
 }

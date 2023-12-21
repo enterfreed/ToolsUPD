@@ -9,21 +9,19 @@ public static class StringHelpers
     /// <param name="number"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-   // public static (bool isNum, int lineNum) IsPublishStartsWithNum(string str)
-   // {
-   //     var trimmedStr = str.Trim('(', ' ');
-
-   //     int index = trimmedStr.IndexOf(':');
-
-   //     if (index != -1)
-   //     {
-   //         string substringNum = trimmedStr.Substring(0, index);
-   //         return int.TryParse(substringNum, out number);
-   //     }
-   //     
-   //     number = -1;
-   //     return false;
-   // }
+   public static (bool isNum, int lineNum) IsPublishStartsWithNum(string str)
+   {
+      (bool, int) result = (false, 0);
+      var trimmedStr = str.Trim('(', ' ');
+      int index = trimmedStr.IndexOf(':');
+      
+      if (index != -1)
+      {
+          string substringNum = trimmedStr.Substring(0, index);
+          result = (int.TryParse(substringNum, out int number), number);
+      }
+       return result;
+   }
     
     /// <summary>
     ///  Метод принимает строку, определяет начинается ли она с числа и возвращает bool и само число
@@ -42,7 +40,7 @@ public static class StringHelpers
     
 
     /// <summary>
-    /// 
+    /// Метод удаляет подстроку между символами, включая эти символы
     /// </summary>
     /// <param name="str"></param>
     /// <param name="start"></param>
@@ -61,6 +59,14 @@ public static class StringHelpers
         return str;
     }
     
+    /// <summary>
+    /// Метод получает подстроку между символами
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="start"></param>
+    /// <param name="end"></param>
+    /// <returns></returns>
+    
     public static string GetSubstr(string str, char start, char end)
     {
         if (str.Contains(start) && str.Contains(end))
@@ -75,6 +81,12 @@ public static class StringHelpers
     }
 
 
+    /// <summary>
+    /// Метод получает строку, в которой содержится искомый тип и пытается обрабатывает строку по условиям
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="searchedVariable"></param>
+    /// <returns></returns>
     public static string GetClassFromString(string str, string searchedVariable = " ")
     {
         if (str.Contains("_logger"))
@@ -107,11 +119,6 @@ public static class StringHelpers
         {
             if (!searchedVariable.Contains('$'))
             {
-               //cutStr = DelSubstr(str, '(', ')');
-               //var arrStr = cutStr.Split(' ');
-               //cutStr = arrStr[arrStr.Length - 1];
-               //return cutStr;
-               
                var arrStr = str.Split(' ');
                str = arrStr[arrStr.Length - 2];
                char start = '(';
