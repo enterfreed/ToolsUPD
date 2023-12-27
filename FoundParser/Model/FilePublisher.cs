@@ -7,6 +7,7 @@ public class FilePublisher
     public string Project;
     public string LinkedClass;
     public string Variable;
+    public string DefaultSting;
     
 
     /// <summary>
@@ -17,6 +18,6 @@ public class FilePublisher
     /// 
     public string GetFullPath(string rootPath = " ")
     {
-        return rootPath + Path.Combine(PathElems.ToArray());
+        return rootPath.Trim() + Path.Combine(PathElems.ToArray());
     }
 }

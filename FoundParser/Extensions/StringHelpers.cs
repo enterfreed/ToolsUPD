@@ -36,8 +36,6 @@ public static class StringHelpers
         var result = (int.TryParse(cutStr, out int number), number);
         return result;
     }
-    
-    
 
     /// <summary>
     /// Метод удаляет подстроку между символами, включая эти символы
@@ -80,7 +78,6 @@ public static class StringHelpers
         return str;
     }
 
-
     /// <summary>
     /// Метод получает строку, в которой содержится искомый тип и пытается обрабатывает строку по условиям
     /// </summary>
@@ -89,31 +86,25 @@ public static class StringHelpers
     /// <returns></returns>
     public static string GetClassFromString(string str, string searchedVariable = " ")
     {
-        if (str.Contains("_logger"))
-        {
-            return "parse error in string: " + str.Trim();
-        }
-        
         string subString = "new";
         string cutStr = " ";
 
         if (str.Contains(subString))
         {
             int subStringIndex = str.IndexOf(subString);
-            
 
             if (str.Contains("new ()"))
             {
                 cutStr = str.Substring(0, subStringIndex - 2);
-                return cutStr.Trim();
-            }
-            else
+                
+            }else
             {
                 cutStr = str.Substring(subStringIndex + subString.Length);
             }
+
+            cutStr = DelSubstr(cutStr, '(', ')');
        
             return cutStr.Split(' ', StringSplitOptions.TrimEntries)[1];
-           
         }
         else
         {
@@ -127,6 +118,15 @@ public static class StringHelpers
                return cutStr;
             }
         }
+        
         return cutStr;
+    }
+
+    public static string GetStringWithoutBrackets(string sourse)
+    {
+        string str = sourse.Replace("<", "").Replace(">", "");
+        str = DelSubstr(str, '(', ')');
+
+        return str;
     }
 }
