@@ -3,8 +3,8 @@ namespace test;
 
 public static class Program
 {
-    private const string folderPath = @"C:\Projects\secretStaff\src\GpnDs.PGA\";
-    private const string initMigration = @"C:\Projects\secretStaff\src\GpnDs.PGA\GpnDs.PGA.Postgres.Migrations";
+    private const string folderPath = @"C:\Projects\U190001617_rgdob\src\GpnDs.PGA\";
+    private const string initMigration = @"C:\Projects\U190001617_rgdob\src\GpnDs.PGA\GpnDs.PGA.Postgres.Migrations";
     private const string searchedStr = "Migrations";
     private const string searchedStrTest = "TestDatas";
     private const string searchedExtension = ".sql";
@@ -44,7 +44,8 @@ public static class Program
             DataBaseConnection.ExecuteQuery(filesList, loginPassword, false);
             if (IsAddTestData)
             {
-                var filesTestList = GetFilesInDirectory(Path.Combine(directory, searchedStrTest));
+                
+                var filesTestList = GetFilesInDirectory(directory + "." + searchedStrTest);
                 DataBaseConnection.ExecuteQuery(filesTestList, loginPassword, false);
             }
         }

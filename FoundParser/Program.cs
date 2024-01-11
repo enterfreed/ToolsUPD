@@ -5,8 +5,13 @@ namespace FoundParser;
 public static class Program
 {
     private static Dictionary<string, string> excludes = new();
-    public const string filePath = @"C:\Users\boris\Desktop\ParserResult\publish.txt"; // путь к файлу выгрузки
-    //public const string[] filePath = @"C:\Users\boris\Desktop\ParserResult\publish.txt"; // путь к файлу выгрузки
+
+    static string[] filePaths =
+    {
+        @"C:\Users\boris\Desktop\ParserResult\publishT.txt",
+        @"C:\Users\boris\Desktop\ParserResult\publish.txt"
+    };
+   
     public const string rootPath = @"C:\Projects\secretStaff\src\GpnDs.PGA\"; //  корневая директория файлов проекта
     public const string outputFileDir = @"C:\Users\boris\Desktop\ParserResult\"; // куда сохраняем файл
     public const string outputFileName = "publish.csv"; // имя файла для записи
@@ -18,25 +23,31 @@ public static class Program
 
     public static void Main()
     {
-        List<FilePublisher> result;
+        List<FilePublisher> result = new();
         Init();
+
+        foreach (var filePath in filePaths)
+        {
+            result.AddRange(FileParser.ParseExportFile(filePath, SpacesPerLevel, FirstLevelTabCount, StringHelpers.IsPublishStartsWithNum));
+          
+        }
+        
         if (isPublish)
         {
-            //result add range
-            result = FileParser.ParseExportFile(filePath, SpacesPerLevel, FirstLevelTabCount, StringHelpers.IsPublishStartsWithNum);
-            
             result = FileParser.AddPublisherTypeByFilePath(result, rootPath, excludes);
-            
         }
         else
         {
-            result = FileParser.ParseExportFile(filePath, SpacesPerLevel, FirstLevelTabCount, StringHelpers.IsSubscriberStartsWithNum);
-            //result = FileParser.AddSubsciberTypeByFilePath(result, rootPath);
-            
+            result = FileParser.AddSubsciberTypeByFilePath(result, rootPath);
         }
-        //result.Distinct()
+            
         result = FileParser.AddProjectByFilePath(result);
+            
         ImportManager.SaveToCSV(result, outputFileName, outputFileDir);
+        
+        
+        //result.Distinct()
+        
     }
 
     private static void Init()

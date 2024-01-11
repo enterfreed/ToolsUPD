@@ -46,7 +46,6 @@ public class DataBaseConnection
         try
         { 
             conn.Open();
-            Console.WriteLine("Соединение успешно установлено с базой данных PostgreSQL.");
        
             foreach (var filePath in filesList)
             {

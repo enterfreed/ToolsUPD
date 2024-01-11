@@ -72,6 +72,12 @@ public static class StringHelpers
             int startIndex = str.IndexOf(start)+1;
             int endIndex = str.IndexOf(end);
             int length = endIndex - startIndex;
+
+            if (length < 0)
+            {
+                return str;
+            }
+            
             str = str.Substring(startIndex, length).Trim();
             return str;
         }
@@ -103,8 +109,8 @@ public static class StringHelpers
             }
 
             cutStr = DelSubstr(cutStr, '(', ')');
-       
-            return cutStr.Split(' ', StringSplitOptions.TrimEntries)[1];
+            
+            return cutStr.Trim().Split(' ', StringSplitOptions.TrimEntries)[0];
         }
         else
         {
@@ -129,4 +135,5 @@ public static class StringHelpers
 
         return str;
     }
+    
 }
