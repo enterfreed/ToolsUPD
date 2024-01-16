@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoundParser", "FoundParser\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MigrationRunner", "MigrationRunner\MigrationRunner.csproj", "{763246A6-4C66-4CE8-B5B0-69B62A5A1B9E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FilesUpdater", "FilesUpdater\FilesUpdater.csproj", "{2C23E5ED-E13F-49E3-86FF-88DCB0AC8FB7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{763246A6-4C66-4CE8-B5B0-69B62A5A1B9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{763246A6-4C66-4CE8-B5B0-69B62A5A1B9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{763246A6-4C66-4CE8-B5B0-69B62A5A1B9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C23E5ED-E13F-49E3-86FF-88DCB0AC8FB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C23E5ED-E13F-49E3-86FF-88DCB0AC8FB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C23E5ED-E13F-49E3-86FF-88DCB0AC8FB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C23E5ED-E13F-49E3-86FF-88DCB0AC8FB7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
