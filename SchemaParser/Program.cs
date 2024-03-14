@@ -74,8 +74,6 @@ public static class Program
 
         return difference;
     }
-    
-    //TODO Поиграться со стилями
 
     /// <summary>
     /// Дефолтное позиционирование для новых элементов схемы
@@ -88,7 +86,25 @@ public static class Program
         {
             if (item.Parent == "1") // Позиционирование только родительеского элемента
             {
-                item.MxGeometry.X = x; 
+                item.MxGeometry.X = x;
+            
+                GraphProperties properties = new GraphProperties(item.Style);
+               
+                properties.FillColor = "#f0826c"; // цвет шапки
+                properties.SwimlaneFillColor = "#ffffff"; // цвет основной секции
+                properties.StrokeColor = "#ffffff"; // border color
+                
+                Type type = properties.GetType();
+                var propertiesTest = type.GetProperties();
+                List<string> test = new ();
+
+                foreach (var prop in propertiesTest)
+                {
+                    test.Add($"{prop.Name}:{prop.GetValue(properties)}");
+                }
+                var str = string.Join(",", test);
+
+                Console.WriteLine(str);
             }
         }
     }

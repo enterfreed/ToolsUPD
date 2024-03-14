@@ -1,4 +1,5 @@
 ﻿namespace SchemaParser.models;
+using System.Globalization;
 
 public class GraphProperties
 {
@@ -25,6 +26,7 @@ public class GraphProperties
             {
                 string key = keyValue[0];
                 string value = keyValue[1];
+                IFormatProvider formatter = new NumberFormatInfo { NumberDecimalSeparator = "." };
 
                 switch (key)
                 {
@@ -56,7 +58,7 @@ public class GraphProperties
                         StrokeColor = value;
                         break;
                     case "strokeWidth":
-                        StrokeWidth = double.Parse(value);
+                        StrokeWidth = double.Parse(value, formatter);
                         break;
                     case "swimlaneFillColor":
                         SwimlaneFillColor = value;
