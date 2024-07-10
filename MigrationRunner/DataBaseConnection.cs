@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using Npgsql;
 
-namespace test;
+namespace MigrationRunner;
 
 public class DataBaseConnection
 {
@@ -63,7 +63,7 @@ public class DataBaseConnection
                          }
                          catch (Exception e)
                          {
-                             Console.WriteLine("Команда не сработала" + e.Message);
+                             Console.WriteLine("Команда не сработала " + e.Message + " для " + filePath);
                          }
                      }
                  }
@@ -75,7 +75,7 @@ public class DataBaseConnection
                      }
                      catch (Exception e)
                      {
-                         Console.WriteLine("Команда не сработала" + e.Message);
+                         Console.WriteLine("Команда не сработала " + e.Message  + " для " + filePath);
                      }
                  }
             }

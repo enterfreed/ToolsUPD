@@ -1,4 +1,6 @@
-﻿using System.Xml.Serialization;
+﻿using System.Diagnostics;
+using System.Threading.Channels;
+using System.Xml.Serialization;
 using SchemaParser.models;
 
 namespace SchemaParser;
@@ -9,7 +11,7 @@ public static class Program
     const string originalShemePath = @"C:\Projects\tools\ToolsUPD\SchemaParser\result\result — копия.drawio";
     const string originalShemePath2 = @"C:\Projects\tools\ToolsUPD\SchemaParser\result\result1.drawio";
   
-    public static void Main()
+    static async Task Main(string[] args)
     {
         CheckFileSize(originalShemePath);
         CheckFileSize(newShemePath);
@@ -58,7 +60,7 @@ public static class Program
         var newMxCells = newSchema?.Diagram.MxGraphModel.Root.MxCells;
 
         Console.WriteLine("Исходная схема: "  + originalMxCells.Count);
-        Console.WriteLine("Новая схема: " + newMxCells.Count);
+        Console.WriteLine("Новая схема: " + anewMxCells.Count);
         
         var commonpart = newMxCells.Intersect(originalMxCells, new Helper()); //пересечение (общие элементы)
         

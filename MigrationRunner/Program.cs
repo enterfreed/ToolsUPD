@@ -1,5 +1,4 @@
-﻿/* тестовая песочница */
-namespace test;
+﻿namespace MigrationRunner;
 
 public static class Program
 {
@@ -29,6 +28,12 @@ public static class Program
     
     public static void Main()
     {
+        //1. зайди в докер и удали нахуй базу
+        //2. Создай контейнер. Не благодари за команду
+            //docker run --name pg_test -p 5432:5432 -e POSTGRES_PASSWORD=111 -d postgres
+        //3. скинь файлы миграций новые в папку GpnDs.PGA (раньше на проекте они лежали в одной куче да)
+        //4. запускай тулзу
+
         DataBaseConnection.RunInitUser();
         
         var initFiles = GetFilesInDirectory(initMigration);
@@ -38,31 +43,31 @@ public static class Program
         var directoriesList = GetDirectories(folderPath);
         
        foreach (var directory in directoriesList.Where(x => x != initMigration))
-        {
+       {
             var filesList = GetFilesInDirectory(directory);
+            if (filesList.Count == 0)  return;
+
             string loginPassword = GetLoginPasswordString(directory);
             DataBaseConnection.ExecuteQuery(filesList, loginPassword, false);
             if (IsAddTestData)
             {
-                
                 var filesTestList = GetFilesInDirectory(directory + "." + searchedStrTest);
+                if (filesTestList.Count == 0)  return;
                 DataBaseConnection.ExecuteQuery(filesTestList, loginPassword, false);
             }
-        }
+       }
+       
+       Console.WriteLine("Миграции применены");
     }
 
-    public static string GetLoginPasswordString(string dirName)
+    private static string GetLoginPasswordString(string dirName)
     {
-        string relativePath = Path.GetRelativePath(folderPath, dirName);
+        var relativePath = Path.GetRelativePath(folderPath, dirName);
         if (rolePwd.TryGetValue(relativePath, out var loginPassword))
         {
           return loginPassword;
         }
-        else
-        {
-            throw new Exception($"Для {dirName} не найден логин и пароль");
-        }
-        
+        throw new Exception($"Для {dirName} не найден логин и пароль");
     }
 
     private static List<string> GetFilesInDirectory(string directory)
